@@ -58,9 +58,14 @@ def collision(player, enemy):
     else:
         return False
 
-
-# Get the initial enemy position
-
+# Função para gerar mais inimigos
+def geracaoInimigos():
+    inimigosX = []
+    inimigosY = [] 
+    for i in range(10): # Gera 10 inimigos
+        inimigosX.append(spawn_enemy()[0]) 
+        inimigosY.append(spawn_enemy()[1]) 
+    return [inimigosX, inimigosY] # Retorna a lista de inimigos
 
 # Game loop
 def game():
@@ -147,3 +152,4 @@ game()
 
 # Quit the game
 pygame.quit()
+
