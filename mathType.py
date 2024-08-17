@@ -1,12 +1,14 @@
 import pygame
 import random
 import math
+import sys
 
 """
 INICIO DO NOSSO PROJETO DE PROJETO DE EXTENSÃO 2
 """
 # Initialize Pygame
 pygame.init()
+clock = pygame.time.Clock()
 
 # Set up color
 WHITE = (255, 255, 255)
@@ -40,6 +42,7 @@ def spawn_enemy():
 
 
 qtd_inimigos = [1, 2, 3, 5, 7]  # Define a quantidade de inimigos
+enemy_speed = [0.5, 1, 1.5, 2, 2.5]  # Define a velocidade dos inimigos
 # Set up the enemy characters
 enemy_image = pygame.image.load("enemy.png")
 enemy_image = pygame.transform.scale(enemy_image, (55, 55))
@@ -69,14 +72,33 @@ def collision(player, enemy):
     else:
         return False
 
+numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+operadores = ['+', '-', '*', '/']
+
+def gera_operacao(numero1, numero2, operador, font):
+    numero1 = random.randint(numeros[0], numeros[8])
+    numero2 = random.randint(numeros[0], numeros[8])
+    operador = random.choice(operadores)
+
+    return numero1, numero2, operador
+
+numero1 = 0
+numero2 = 0
+operador = '+'
+
+numero1, numero2, operador = gera_operacao(numero1, numero2, operador, pygame.font.Font('NewAmsterdam-Regular.ttf', 35))
+
+input_rect = pygame.Rect((screen_width - 15) // 2, screen_height - 90, 140, 32)
 
 # Game loop
 def game():
     fim_de_jogo = False
     running = True
+    user_input = ''
     score = 0
     font = pygame.font.Font('NewAmsterdam-Regular.ttf', 40)
     font2 = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
+    font_input = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
     get_pos_enemy_x = []
     get_pos_enemy_y = []
     for i in range(qtd_inimigos[4]):  # Gera 10 inimigos
@@ -95,6 +117,7 @@ def game():
                     running = False
                     fim_de_jogo = False
                     pygame.quit()
+                    sys.exit()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
@@ -104,39 +127,62 @@ def game():
                         running = False
                         fim_de_jogo = False
                         pygame.quit()
+                        sys.exit()
 
         # ...
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                running = False 
                 fim_de_jogo = False
                 pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:    
+                if event.key == pygame.K_BACKSPACE and len(user_input) > 0:
+                    user_input = user_input[:-1]
+                else:
+                    user_input += event.unicode
 
         # Draw the background
         screen.blit(background_image, (0, 0))
 
-        screen.blit(
-            player_image, ((screen_width - 55) // 2, screen_height - 60))
+        pygame.draw.rect(screen, (0, 0, 0), input_rect, 2)
+
+        text_input = font_input.render(user_input, True, WHITE)
+        screen.blit(text_input, (input_rect.x + 5, input_rect.y + 5))
+
+        input_rect.w = max(100, text_input.get_width() + 10)
+        
+        screen.blit(font2.render("Score: " + str(score), True, WHITE), (10, 10))
+
+        screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2), True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
+        
+        screen.blit(player_image, ((screen_width - 55) // 2, screen_height - 60))
 
         direction_x = []
         direction_y = []
         direction_length = []
 
-        qtd_inimigos_spawn = 0
+        qtd_inimigos_por_score = 0
+        enemy_speed_por_score = 0
 
         if score < 3:
-            qtd_inimigos_spawn = 0
+            qtd_inimigos_por_score = 0
+            enemy_speed_por_score = 0
         elif score < 9:
-            qtd_inimigos_spawn = 1
+            qtd_inimigos_por_score = 1
+            enemy_speed_por_score = 1
         elif score < 18:
-            qtd_inimigos_spawn = 2
+            qtd_inimigos_por_score = 2
+            enemy_speed_por_score = 2
         elif score < 32:
-            qtd_inimigos_spawn = 3
+            qtd_inimigos_por_score = 3
+            enemy_speed_por_score = 3
         else:
-            qtd_inimigos_spawn = 4
+            qtd_inimigos_por_score = 4
+            enemy_speed_por_score = 4
 
-        for i in range(qtd_inimigos[qtd_inimigos_spawn]):
+        for i in range(qtd_inimigos[qtd_inimigos_por_score]):
 
             enemy_rect[i].x = get_pos_enemy_x[i]
             enemy_rect[i].y = get_pos_enemy_y[i]
@@ -154,12 +200,9 @@ def game():
             direction_x[i] /= direction_length[i]
             direction_y[i] /= direction_length[i]
 
-            # Set the enemy speed
-            enemy_speed = 0.1
-
             # Update the enemy position based on the direction vector
-            get_pos_enemy_x[i] += direction_x[i] * enemy_speed
-            get_pos_enemy_y[i] += direction_y[i] * enemy_speed
+            get_pos_enemy_x[i] += direction_x[i] * enemy_speed[enemy_speed_por_score]
+            get_pos_enemy_y[i] += direction_y[i] * enemy_speed[enemy_speed_por_score]
             enemy_rect[i].x = get_pos_enemy_x[i]
             enemy_rect[i].y = get_pos_enemy_y[i]
 
@@ -177,6 +220,7 @@ def game():
         # Check for collision
 
         pygame.display.flip()
+        clock.tick(60)
 
 
 # Start the game
