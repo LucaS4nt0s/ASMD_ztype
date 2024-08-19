@@ -283,7 +283,7 @@ def game():
             enemy_rect[i].x = get_pos_enemy_x[i]
             enemy_rect[i].y = get_pos_enemy_y[i]
 
-            pygame.draw.rect(screen, (0, 0, 255), enemy_rect[i], 4)
+            # pygame.draw.rect(screen, (0, 0, 255), enemy_rect[i], 4)
             enemy(get_pos_enemy_x[i], get_pos_enemy_y[i], i)
 
 
@@ -299,7 +299,7 @@ def game():
         player_rect.x = (screen_width - 55) // 2
         player_rect.y = screen_height - 60
 
-        pygame.draw.rect(screen, (255, 0, 0), player_rect, 4)
+        # pygame.draw.rect(screen, (255, 0, 0), player_rect, 4)
 
         pygame.display.flip()
         clock.tick(60)/1000
