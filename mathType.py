@@ -33,6 +33,7 @@ pygame.display.set_caption("ASMD Game")
 player_image = pygame.image.load("player.png")
 player_image = pygame.transform.scale(player_image, (55, 55))
 
+inimigo_morto = False
 
 def spawn_enemy():
     x = random.randint(0, screen_width - 55)
@@ -42,7 +43,7 @@ def spawn_enemy():
 
 
 qtd_inimigos = [1, 2, 3, 5, 7]  # Define a quantidade de inimigos
-enemy_speed = [0.5, 1, 1.5, 2, 2.5]  # Define a velocidade dos inimigos
+enemy_speed = [0.5, 0.7, 1, 1.5, 1.75]  # Define a velocidade dos inimigos
 # Set up the enemy characters
 enemy_image = pygame.image.load("enemy.png")
 enemy_image = pygame.transform.scale(enemy_image, (55, 55))
@@ -58,6 +59,8 @@ player_rect = player_image.get_rect()
 
 def enemy(x, y, i):
     screen.blit(enemy_img[i], (x, y))
+    global inimigo_morto
+    inimigo_morto = False   
 
 
 def imprimirCX(text, font, cor, y):  # Função para imprimir texto no centro da tela em x
@@ -100,6 +103,7 @@ input_rect = pygame.Rect((screen_width - 15) // 2, screen_height - 90, 140, 32)
 
 
 def end_game():
+    global running
     running = False
     pygame.quit()
     sys.exit()
@@ -112,6 +116,7 @@ def game():
     fim_de_jogo = False
     global running
     global numero1, numero2, operador, resultado
+    global inimigo_morto
     running = True
     user_input = ""
     resposta = ""
@@ -121,9 +126,12 @@ def game():
     font_input = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
     get_pos_enemy_x = []
     get_pos_enemy_y = []
-    for i in range(qtd_inimigos[4]):  # Gera 10 inimigos
-        get_pos_enemy_x.append(spawn_enemy()[0])
-        get_pos_enemy_y.append(spawn_enemy()[1])
+    for i in range(qtd_inimigos[0]):  # Começamos com a quantidade inicial de inimigos
+        new_x, new_y = spawn_enemy()
+        get_pos_enemy_x.append(new_x)
+        get_pos_enemy_y.append(new_y)
+        enemy_rect.append(enemy_image.get_rect())
+
     while running:
         while fim_de_jogo:
             screen.blit(background_image, (0, 0))
@@ -174,6 +182,7 @@ def game():
                     resposta = str(user_input)
                     print(resposta)
                     if resposta == str(resultado):
+                        inimigo_morto = True
                         score += 1
                         print("Acertou")
                         numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
@@ -210,13 +219,13 @@ def game():
                     True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
         
 
-        
         screen.blit(
             player_image, ((screen_width - 55) // 2, screen_height - 60))
 
         direction_x = []
         direction_y = []
         direction_length = []
+        inimigos_para_remover = []
 
         qtd_inimigos_por_score = 0
         enemy_speed_por_score = 0
@@ -236,11 +245,22 @@ def game():
         else:
             qtd_inimigos_por_score = 4
             enemy_speed_por_score = 4
+        
+        # Ajusta quantidade de inimigos ao score
+        while len(get_pos_enemy_x) < qtd_inimigos[qtd_inimigos_por_score]:
+            new_x, new_y = spawn_enemy()
+            get_pos_enemy_x.append(new_x)
+            get_pos_enemy_y.append(new_y)
+            enemy_rect.append(enemy_image.get_rect())
 
-        for i in range(qtd_inimigos[qtd_inimigos_por_score]):
+        for i in range(len(get_pos_enemy_x)):
 
             enemy_rect[i].x = get_pos_enemy_x[i]
             enemy_rect[i].y = get_pos_enemy_y[i]
+
+            if inimigo_morto:  # Verifique se inimigo_morto é True
+                inimigos_para_remover.append(i)  # Marque o inimigo para remoção
+                inimigo_morto = False
 
             # Calculate the direction vector from enemy to player
 
@@ -266,8 +286,15 @@ def game():
             pygame.draw.rect(screen, (0, 0, 255), enemy_rect[i], 4)
             enemy(get_pos_enemy_x[i], get_pos_enemy_y[i], i)
 
+
             if collision(player_rect, enemy_rect[i]):
                 fim_de_jogo = True
+            
+        for i in sorted(inimigos_para_remover, reverse=True):
+            get_pos_enemy_x.pop(i)
+            get_pos_enemy_y.pop(i)
+            enemy_rect.pop(i)
+            
 
         player_rect.x = (screen_width - 55) // 2
         player_rect.y = screen_height - 60
