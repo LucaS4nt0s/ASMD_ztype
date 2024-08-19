@@ -178,6 +178,10 @@ def game():
                         print("Acertou")
                         numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
                         resultado = eval(str(numero1) + operador + str(numero2))
+                        if operador == '/' and resultado % 1 == 0:
+                            resultado = round(resultado)
+                        elif operador == '/':
+                            resultado = round(resultado, 1)
                         imprime_expressao(font)
                         print(resultado)
                         resposta = ""
