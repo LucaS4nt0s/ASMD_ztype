@@ -72,8 +72,10 @@ def collision(player, enemy):
     else:
         return False
 
+
 numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 operadores = ['+', '-', '*', '/']
+
 
 def gera_operacao(numero1, numero2, operador, font):
     numero1 = random.randint(numeros[0], numeros[8])
@@ -82,20 +84,30 @@ def gera_operacao(numero1, numero2, operador, font):
 
     return numero1, numero2, operador
 
+
 numero1 = 0
 numero2 = 0
 operador = '+'
 
-numero1, numero2, operador = gera_operacao(numero1, numero2, operador, pygame.font.Font('NewAmsterdam-Regular.ttf', 35))
+numero1, numero2, operador = gera_operacao(
+    numero1, numero2, operador, pygame.font.Font('NewAmsterdam-Regular.ttf', 35))
 
 input_rect = pygame.Rect((screen_width - 15) // 2, screen_height - 90, 140, 32)
 
 # Game loop
+
+
+def end_game():
+    running = False
+    pygame.quit()
+    sys.exit()
+
+
 def game():
     fim_de_jogo = False
     running = True
-    user_input = ''
-    score = 0
+    user_input = ""
+    score = 40
     font = pygame.font.Font('NewAmsterdam-Regular.ttf', 40)
     font2 = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
     font_input = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
@@ -106,40 +118,49 @@ def game():
         get_pos_enemy_y.append(spawn_enemy()[1])
     while running:
         while fim_de_jogo:
-            imprimirCX("Fim de jogo!", font, RED, (screen_height // 2) - 100)
-            imprimirCX("Pressione espaço para jogar novamente ou ESC para sair",
-                       font2, WHITE, (screen_height // 2) - 50)
-
+            screen.blit(background_image, (0, 0))
+            imprimirCX("Fim de jogo", font, RED, (screen_height // 2) - 100)
+            imprimirCX("Pressione espaço para jogar novamente", font2,
+                       BLACK, (screen_height // 2) - 50)
+            imprimirCX("Pressione ESC para sair", font2,
+                       BLACK, (screen_height // 2) - 20)
             pygame.display.flip()
-            # Event handling
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
-                    fim_de_jogo = False
-                    pygame.quit()
-                    sys.exit()
-
-                if event.type == pygame.KEYDOWN:
+                    end_game()
+                elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        fim_de_jogo = False
                         game()
                     elif event.key == pygame.K_ESCAPE:
-                        running = False
-                        fim_de_jogo = False
-                        pygame.quit()
-                        sys.exit()
-
+                        end_game()
         # ...
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False 
-                fim_de_jogo = False
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:    
-                if event.key == pygame.K_BACKSPACE and len(user_input) > 0:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:  # and len(user_input) > 0:
                     user_input = user_input[:-1]
+                elif event.key == pygame.K_0:
+                    user_input += "0"
+                elif event.key == pygame.K_1:
+                    user_input += "1"
+                elif event.key == pygame.K_2:
+                    user_input += "2"
+                elif event.key == pygame.K_3:
+                    user_input += "3"
+                elif event.key == pygame.K_4:
+                    user_input += "4"
+                elif event.key == pygame.K_5:
+                    user_input += "5"
+                elif event.key == pygame.K_6:
+                    user_input += "6"
+                elif event.key == pygame.K_7:
+                    user_input += "7"
+                elif event.key == pygame.K_8:
+                    user_input += "8"
+                elif event.key == pygame.K_9:
+                    user_input += "9"
+                elif event.key == pygame.K_RETURN:
+                    return str(user_input)
                 else:
                     user_input += event.unicode
 
@@ -151,13 +172,18 @@ def game():
         text_input = font_input.render(user_input, True, WHITE)
         screen.blit(text_input, (input_rect.x + 5, input_rect.y + 5))
 
+        # Ajusta o tamanho da caixa de texto
         input_rect.w = max(100, text_input.get_width() + 10)
-        
-        screen.blit(font2.render("Score: " + str(score), True, WHITE), (10, 10))
 
-        screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2), True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
-        
-        screen.blit(player_image, ((screen_width - 55) // 2, screen_height - 60))
+        # Imprime o score
+        screen.blit(font2.render(
+            "Score: " + str(score), True, WHITE), (10, 10))
+
+        screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2),
+                    True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
+
+        screen.blit(
+            player_image, ((screen_width - 55) // 2, screen_height - 60))
 
         direction_x = []
         direction_y = []
@@ -201,8 +227,10 @@ def game():
             direction_y[i] /= direction_length[i]
 
             # Update the enemy position based on the direction vector
-            get_pos_enemy_x[i] += direction_x[i] * enemy_speed[enemy_speed_por_score]
-            get_pos_enemy_y[i] += direction_y[i] * enemy_speed[enemy_speed_por_score]
+            get_pos_enemy_x[i] += direction_x[i] * \
+                enemy_speed[enemy_speed_por_score]
+            get_pos_enemy_y[i] += direction_y[i] * \
+                enemy_speed[enemy_speed_por_score]
             enemy_rect[i].x = get_pos_enemy_x[i]
             enemy_rect[i].y = get_pos_enemy_y[i]
 
@@ -216,8 +244,6 @@ def game():
         player_rect.y = screen_height - 60
 
         pygame.draw.rect(screen, (255, 0, 0), player_rect, 4)
-
-        # Check for collision
 
         pygame.display.flip()
         clock.tick(60)
