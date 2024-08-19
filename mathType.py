@@ -173,12 +173,12 @@ def game():
                 elif event.key == pygame.K_RETURN:
                     resposta = str(user_input)
                     print(resposta)
-                    if resposta == resultado:
+                    if resposta == str(resultado):
                         score += 1
                         print("Acertou")
                         numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
-                        imprime_expressao(font)
                         resultado = eval(str(numero1) + operador + str(numero2))
+                        imprime_expressao(font)
                         print(resultado)
                         resposta = ""
                     user_input = ""
@@ -204,6 +204,8 @@ def game():
 
         screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2),
                     True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
+        
+
         
         screen.blit(
             player_image, ((screen_width - 55) // 2, screen_height - 60))
