@@ -77,20 +77,22 @@ numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 operadores = ['+', '-', '*', '/']
 
 
-def gera_operacao(numero1, numero2, operador, font):
+def gera_operacao(numero1, numero2, operador):
     numero1 = random.randint(numeros[0], numeros[8])
     numero2 = random.randint(numeros[0], numeros[8])
     operador = random.choice(operadores)
 
     return numero1, numero2, operador
 
-
 numero1 = 0
 numero2 = 0
 operador = '+'
 
-numero1, numero2, operador = gera_operacao(
-    numero1, numero2, operador, pygame.font.Font('NewAmsterdam-Regular.ttf', 35))
+
+numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
+
+resultado = str(eval(str(numero1) + operador + str(numero2)))
+print(resultado)
 
 input_rect = pygame.Rect((screen_width - 15) // 2, screen_height - 90, 140, 32)
 
@@ -102,12 +104,18 @@ def end_game():
     pygame.quit()
     sys.exit()
 
+def imprime_expressao(font):
+    screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2),
+                    True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
 
 def game():
     fim_de_jogo = False
+    global running
+    global numero1, numero2, operador, resultado
     running = True
     user_input = ""
-    score = 40
+    resposta = ""
+    score = 0
     font = pygame.font.Font('NewAmsterdam-Regular.ttf', 40)
     font2 = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
     font_input = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
@@ -133,10 +141,13 @@ def game():
                         game()
                     elif event.key == pygame.K_ESCAPE:
                         end_game()
+                        
         # ...
 
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT:
+                    end_game()
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:  # and len(user_input) > 0:
                     user_input = user_input[:-1]
                 elif event.key == pygame.K_0:
@@ -160,9 +171,21 @@ def game():
                 elif event.key == pygame.K_9:
                     user_input += "9"
                 elif event.key == pygame.K_RETURN:
-                    return str(user_input)
+                    resposta = str(user_input)
+                    print(resposta)
+                    if resposta == resultado:
+                        score += 1
+                        print("Acertou")
+                        numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
+                        imprime_expressao(font)
+                        resultado = eval(str(numero1) + operador + str(numero2))
+                        print(resultado)
+                        resposta = ""
+                    user_input = ""
                 else:
                     user_input += event.unicode
+                    
+       
 
         # Draw the background
         screen.blit(background_image, (0, 0))
@@ -173,7 +196,7 @@ def game():
         screen.blit(text_input, (input_rect.x + 5, input_rect.y + 5))
 
         # Ajusta o tamanho da caixa de texto
-        input_rect.w = max(100, text_input.get_width() + 10)
+        input_rect.w = max(50, text_input.get_width() + 10)
 
         # Imprime o score
         screen.blit(font2.render(
@@ -181,7 +204,7 @@ def game():
 
         screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2),
                     True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
-
+        
         screen.blit(
             player_image, ((screen_width - 55) // 2, screen_height - 60))
 
@@ -246,7 +269,7 @@ def game():
         pygame.draw.rect(screen, (255, 0, 0), player_rect, 4)
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(60)/1000
 
 
 # Start the game
