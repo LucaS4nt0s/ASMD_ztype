@@ -94,8 +94,14 @@ operador = '+'
 
 numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
 
-resultado = str(eval(str(numero1) + operador + str(numero2)))
+resultado = eval(str(numero1) + operador + str(numero2))
+if operador == '/' and resultado % 1 == 0: 
+    resultado = round(resultado)
+elif operador == '/':
+    resultado = round(resultado, 1)
+resultado = str(resultado)
 print(resultado)
+
 
 input_rect = pygame.Rect((screen_width - 15) // 2, screen_height - 90, 140, 32)
 
