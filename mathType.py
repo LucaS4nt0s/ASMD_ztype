@@ -112,6 +112,8 @@ def imprime_expressao(font):
     screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2),
                     True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
 
+lista_num = [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]
+
 def game():
     fim_de_jogo = False
     global running
@@ -158,26 +160,8 @@ def game():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:  # and len(user_input) > 0:
                     user_input = user_input[:-1]
-                elif event.key == pygame.K_0:
-                    user_input += "0"
-                elif event.key == pygame.K_1:
-                    user_input += "1"
-                elif event.key == pygame.K_2:
-                    user_input += "2"
-                elif event.key == pygame.K_3:
-                    user_input += "3"
-                elif event.key == pygame.K_4:
-                    user_input += "4"
-                elif event.key == pygame.K_5:
-                    user_input += "5"
-                elif event.key == pygame.K_6:
-                    user_input += "6"
-                elif event.key == pygame.K_7:
-                    user_input += "7"
-                elif event.key == pygame.K_8:
-                    user_input += "8"
-                elif event.key == pygame.K_9:
-                    user_input += "9"
+                elif event.key in lista_num:
+                    user_input += str(event.key - pygame.K_0)
                 elif event.key == pygame.K_RETURN:
                     resposta = str(user_input)
                     print(resposta)
@@ -283,7 +267,7 @@ def game():
             enemy_rect[i].x = get_pos_enemy_x[i]
             enemy_rect[i].y = get_pos_enemy_y[i]
 
-            pygame.draw.rect(screen, (0, 0, 255), enemy_rect[i], 4)
+            #pygame.draw.rect(screen, (0, 0, 255), enemy_rect[i], 4)
             enemy(get_pos_enemy_x[i], get_pos_enemy_y[i], i)
 
 
@@ -299,7 +283,7 @@ def game():
         player_rect.x = (screen_width - 55) // 2
         player_rect.y = screen_height - 60
 
-        pygame.draw.rect(screen, (255, 0, 0), player_rect, 4)
+        #pygame.draw.rect(screen, (255, 0, 0), player_rect, 4)
 
         pygame.display.flip()
         clock.tick(60)/1000
