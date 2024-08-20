@@ -75,6 +75,21 @@ def collision(player, enemy):
     else:
         return False
 
+score = 0
+
+file = open('high_score.txt', 'r')
+read = file.readlines()
+high_score = int(read[0])
+file.close()
+
+def check_high_score():
+    global high_score
+    if score > high_score:
+        high_score = score
+        file = open('high_score.txt', 'w')
+        file.write(str(int(high_score)))
+        file.close()
+
 
 numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 operadores = ['+', '-', '*', '/']
@@ -128,6 +143,7 @@ def game():
     running = True
     user_input = ""
     resposta = ""
+    global score
     score = 0
     font = pygame.font.Font('NewAmsterdam-Regular.ttf', 40)
     font2 = pygame.font.Font('NewAmsterdam-Regular.ttf', 23)
@@ -142,6 +158,7 @@ def game():
 
     while running:
         while fim_de_jogo:
+            check_high_score()
             screen.blit(background_image, (0, 0))
             imprimirCX("Fim de jogo", font, RED, (screen_height // 2) - 100)
             imprimirCX("Pressione espaço para jogar novamente", font2,
@@ -162,6 +179,7 @@ def game():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                    check_high_score()
                     end_game()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:  # and len(user_input) > 0:
@@ -174,6 +192,7 @@ def game():
                     if resposta == str(resultado):
                         inimigo_morto = True
                         score += 1
+                        check_high_score()
                         print("Acertou")
                         numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
                         resultado = eval(str(numero1) + operador + str(numero2))
@@ -196,14 +215,21 @@ def game():
         pygame.draw.rect(screen, (0, 0, 0), input_rect, 2)
 
         text_input = font_input.render(user_input, True, WHITE)
-        screen.blit(text_input, (input_rect.x + 5, input_rect.y + 5))
+        screen.blit(text_input, (input_rect.x + 20, input_rect.y + 5))
 
         # Ajusta o tamanho da caixa de texto
-        input_rect.w = max(50, text_input.get_width() + 10)
+        input_rect.w = max(50, text_input.get_width() - 10)
 
         # Imprime o score
         screen.blit(font2.render(
             "Score: " + str(score), True, WHITE), (10, 10))
+
+        with open('high_score.txt', 'r') as file:
+            high_score = int(file.read())
+
+        high_score_text = font2.render(f'High Score: {high_score}', True, RED) 
+        
+        screen.blit(high_score_text, (100, 10))
 
         screen.blit(font.render(str(numero1) + ' ' + str(operador) + ' ' + str(numero2),
                     True, WHITE), ((screen_width - 70) // 2, (screen_height - 23) // 2))
