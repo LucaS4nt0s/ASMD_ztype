@@ -43,7 +43,7 @@ def spawn_enemy():
 
 
 qtd_inimigos = [1, 2, 3, 5, 7]  # Define a quantidade de inimigos
-enemy_speed = [0.5, 0.7, 1, 1.5, 1.75]  # Define a velocidade dos inimigos
+enemy_speed = [0.5, 0.7, 1, 1.2, 1.5]  # Define a velocidade dos inimigos
 # Set up the enemy characters
 enemy_image = pygame.image.load("enemy.png")
 enemy_image = pygame.transform.scale(enemy_image, (55, 55))
@@ -159,6 +159,8 @@ def game():
     while running:
         while fim_de_jogo:
             check_high_score()
+            numero1, numero2, operador = gera_operacao(numero1, numero2, operador)
+            resultado = eval(str(numero1) + operador + str(numero2))
             screen.blit(background_image, (0, 0))
             imprimirCX("Fim de jogo", font, RED, (screen_height // 2) - 100)
             imprimirCX("Pressione espaço para jogar novamente", font2,
